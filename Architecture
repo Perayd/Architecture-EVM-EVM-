@@ -1,0 +1,9 @@
+User
+ └─> SourceChainContract
+       ├─ Locks tokens
+       └─ Sends cross-chain message
+                ↓
+         Cross-chain messaging layer
+                ↓
+       DestinationChainContract
+       └─ Mints / updates DeFi state
