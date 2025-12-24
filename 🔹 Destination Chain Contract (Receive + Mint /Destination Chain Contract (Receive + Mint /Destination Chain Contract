@@ -1,0 +1,30 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+contract DestinationDeFi {
+    mapping(address => uint256) public balances;
+
+    address public trustedMessenger;
+
+    constructor(address _messenger) {
+        trustedMessenger = _messenger;
+    }
+
+    modifier onlyMessenger() {
+        require(msg.sender == trustedMessenger, "Not authorized");
+        _;
+    }
+
+    function onMessageReceived(bytes calldata payload)
+        external
+        onlyMessenger
+    {
+        (address user, uint256 amount) = abi.decode(
+            payload,
+            (address, uint256)
+        );
+
+        // Mint / credit DeFi balance
+        balances[user] += amount;
+    }
+}
