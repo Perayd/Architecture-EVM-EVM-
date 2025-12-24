@@ -1,0 +1,38 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+interface ICrossChainMessenger {
+    function send(
+        uint16 dstChainId,
+        bytes calldata payload
+    ) external payable;
+}
+
+contract SourceDeFi {
+    ICrossChainMessenger public messenger;
+
+    mapping(address => uint256) public locked;
+
+    constructor(address _messenger) {
+        messenger = ICrossChainMessenger(_messenger);
+    }
+
+    function crossChainSwap(
+        uint16 dstChainId,
+        uint256 amount
+    ) external payable {
+        require(amount > 0, "Invalid amount");
+
+        // Lock funds (example: native ETH)
+        locked[msg.sender] += amount;
+
+        // Encode DeFi action
+        bytes memory payload = abi.encode(
+            msg.sender,
+            amount
+        );
+
+        // Send message to destination chain
+        messenger.send{value: msg.value}(dstChainId, payload);
+    }
+}
